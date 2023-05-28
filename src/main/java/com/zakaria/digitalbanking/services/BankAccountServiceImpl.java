@@ -2,6 +2,7 @@ package com.zakaria.digitalbanking.services;
 
 import com.zakaria.digitalbanking.dtos.*;
 import com.zakaria.digitalbanking.entities.*;
+import com.zakaria.digitalbanking.enums.AccountStatus;
 import com.zakaria.digitalbanking.enums.OperationType;
 import com.zakaria.digitalbanking.exceptions.BalanceNotSufficientException;
 import com.zakaria.digitalbanking.exceptions.BankAccountNotFoundException;
@@ -49,6 +50,7 @@ public class BankAccountServiceImpl implements BankAccountService {
         currentAccount.setId(UUID.randomUUID());
         currentAccount.setCreatedAt(new Date()); currentAccount.setBalance(initialBalance);
         currentAccount.setOverDraft(overDraft); currentAccount.setCustomer(customer);
+        currentAccount.setStatus(AccountStatus.ACTIVATED);
         CurrentAccount savedBankAccount = bankAccountRepository.save(currentAccount);
         return dtoMapper.fromCurrentBankAccount(savedBankAccount);
     }
