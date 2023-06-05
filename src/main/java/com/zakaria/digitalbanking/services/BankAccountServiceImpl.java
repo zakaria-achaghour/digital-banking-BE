@@ -37,6 +37,8 @@ public class BankAccountServiceImpl implements BankAccountService {
     public CustomerDTO saveCustomer(CustomerDTO customerDTO) {
         log.info("Saving new Customer");
         Customer customer=dtoMapper.fromCustomerDTO(customerDTO);
+        customer.setId(UUID.randomUUID());
+        log.info("herer the birth of date" +customerDTO.getBirthDate());
         Customer savedCustomer = customerRepository.save(customer);
         return dtoMapper.fromCustomer(savedCustomer);
     }
@@ -72,6 +74,15 @@ public class BankAccountServiceImpl implements BankAccountService {
     @Override
     public List<CustomerDTO> listCustomers() {
         List<Customer> customers = customerRepository.findAll();
+        List<CustomerDTO> customerDTOS = customers.stream()
+                .map(customer -> dtoMapper.fromCustomer(customer))
+                .collect(Collectors.toList());
+        return customerDTOS;
+    }
+
+    @Override
+    public List<CustomerDTO> searchCustomers(String keyword) {
+        List<Customer> customers = customerRepository.searchCustomer(keyword);
         List<CustomerDTO> customerDTOS = customers.stream()
                 .map(customer -> dtoMapper.fromCustomer(customer))
                 .collect(Collectors.toList());
