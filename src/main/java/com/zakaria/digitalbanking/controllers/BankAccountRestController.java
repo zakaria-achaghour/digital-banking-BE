@@ -1,6 +1,7 @@
 package com.zakaria.digitalbanking.controllers;
 
 import com.zakaria.digitalbanking.dtos.*;
+import com.zakaria.digitalbanking.exceptions.BalanceNotSufficientException;
 import com.zakaria.digitalbanking.exceptions.BankAccountNotFoundException;
 import com.zakaria.digitalbanking.exceptions.CustomerNotFoundException;
 import com.zakaria.digitalbanking.services.BankAccountService;
@@ -14,6 +15,7 @@ import java.util.UUID;
 @RestController
 @AllArgsConstructor
 @Slf4j
+@CrossOrigin("*")
 public class BankAccountRestController {
     private BankAccountService bankAccountService;
 
@@ -40,5 +42,23 @@ public class BankAccountRestController {
     @PostMapping("/current/account")
     public CurrentBankAccountDTO saveCurrentBankAccount(@RequestBody RequestCurrentAccount requestCurrentAccount) throws CustomerNotFoundException {
             return bankAccountService.saveCurrentBankAccount(requestCurrentAccount.getBalance(), requestCurrentAccount.getOverDraft(), requestCurrentAccount.getCustomerId());
+    }
+
+
+
+    @PostMapping("/accounts/debit")
+    public DebitDTO debit(@RequestBody DebitDTO debitDTO) throws BankAccountNotFoundException, BalanceNotSufficientException {
+        this.bankAccountService.debit(UUID.fromString(debitDTO.getAccountId()), debitDTO.getAmount(), debitDTO.getDescription());
+        return debitDTO;
+    }
+    @PostMapping("/accounts/credit")
+    public CreditDTO credit(@RequestBody CreditDTO creditDTO) throws BankAccountNotFoundException, BalanceNotSufficientException {
+        this.bankAccountService.credit(UUID.fromString(creditDTO.getAccountId()), creditDTO.getAmount(), creditDTO.getDescription());
+        return creditDTO;
+    }
+
+    @PostMapping("/accounts/transfer")
+    public void transfer(@RequestBody TransferRequestDTO transferRequestDTO) throws BankAccountNotFoundException, BalanceNotSufficientException {
+        this.bankAccountService.transfer(UUID.fromString(transferRequestDTO.getAccountSource()), UUID.fromString(transferRequestDTO.getAccountDestination()), transferRequestDTO.getAmount());
     }
 }
